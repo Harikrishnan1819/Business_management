@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admincontroller;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Homecontroller;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,14 +16,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'welcome');
+// Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::view('dashboard', 'dashboard')
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+Route::get('/',[Homecontroller::class,'homepage']);
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+    Route::group(['middleware'=>['auth']],function(){
+        Route::get('/home',[Homecontroller::class,'index'])->name('home');
+    });
 
-require __DIR__.'/auth.php';
+// Route::get('/user/create',[Admincontroller::class,'create'])->middleware(['Admin'])->name('user.create');
+ Route::get('/user/index',[Admincontroller::class,'index'])->middleware(['auth','Admin'])->name('user.index');
+ Route::get('/user/create',[Admincontroller::class,'create'])->middleware(['auth','Admin'])->name('user.create');
+ Route::post('/user/store',[Admincontroller::class,'store'])->middleware(['auth','Admin'])->name('user.store');
+ Route::get('/edit/{user}',[Admincontroller::class,'edit'])->middleware(['auth','Admin'])->name('user.edit');
+ Route::put('/user/{user}',[Admincontroller::class,'update'])->middleware(['auth','Admin'])->name('user.update');
+ Route::delete('/{user}',[Admincontroller::class,'destroy'])->middleware(['auth','Admin'])->name('user.delete');
+ Route::get('blogs/index',[BlogController::class,'index'])->middleware(['auth','Admin'])->name('blog.index');
+ require __DIR__.'/auth.php';
