@@ -1,9 +1,7 @@
 <?php
-
-use App\Http\Controllers\Admincontroller;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\Homecontroller;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\LoginRegisterController;
+use App\Http\Controllers\Usercontroller;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,31 +9,23 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
 
-// Route::view('/', 'welcome');
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
-// Route::view('dashboard', 'dashboard')
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
-Route::get('/',[Homecontroller::class,'homepage']);
+Route::controller(LoginRegisterController::class)->group(function() {
+    Route::get('/register', 'register')->name('register');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/login', 'login')->name('login');
+    Route::post('/authenticate', 'authenticate')->name('authenticate');
+    Route::get('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/logout', 'logout')->name('logout');
+});
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
-    Route::group(['middleware'=>['auth']],function(){
-        Route::get('/home',[Homecontroller::class,'index'])->name('home');
-    });
-
-// Route::get('/user/create',[Admincontroller::class,'create'])->middleware(['Admin'])->name('user.create');
- Route::get('/user/index',[Admincontroller::class,'index'])->middleware(['auth','Admin'])->name('user.index');
- Route::get('/user/create',[Admincontroller::class,'create'])->middleware(['auth','Admin'])->name('user.create');
- Route::post('/user/store',[Admincontroller::class,'store'])->middleware(['auth','Admin'])->name('user.store');
- Route::get('/edit/{user}',[Admincontroller::class,'edit'])->middleware(['auth','Admin'])->name('user.edit');
- Route::put('/user/{user}',[Admincontroller::class,'update'])->middleware(['auth','Admin'])->name('user.update');
- Route::delete('/{user}',[Admincontroller::class,'destroy'])->middleware(['auth','Admin'])->name('user.delete');
- Route::get('blogs/index',[BlogController::class,'index'])->middleware(['auth','Admin'])->name('blog.index');
- require __DIR__.'/auth.php';
+Route::get('/user/index',[Usercontroller::class,'index'])->name('user.index');
+?>
